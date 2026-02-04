@@ -21,6 +21,23 @@ class Config:
     def get_openai_model_options(self):
         return self.config["DEFAULT"].get("OPENAI_MODEL_OPTIONS").split(", ")
 
+    def get_model_families_for_provider(self, provider: str) -> list[str]:
+        if provider == "OpenAI":
+            raw = self.config["DEFAULT"].get("OPENAI_MODEL_FAMILIES", "")
+            return [s.strip() for s in raw.split(",") if s.strip()]
+        if provider == "Ollama":
+            raw = self.config["DEFAULT"].get("OLLAMA_MODEL_FAMILIES", "All")
+            return [s.strip() for s in raw.split(",") if s.strip()]
+        return []
+
+    def get_models_for_provider_family(self, provider: str, family: str) -> list[str]:
+        if provider == "OpenAI" and family == "ChatGPT":
+            raw = self.config["DEFAULT"].get("OPENAI_MODELS_CHATGPT", "")
+            return [s.strip() for s in raw.split(",") if s.strip()]
+        if provider == "Ollama":
+            return self.get_ollama_model_options()
+        return []
+
     def get_local_providers(self):
         return self.config["DEFAULT"].get("LOCAL_PROVIDERS").split(", ")
 
@@ -29,6 +46,9 @@ class Config:
 
     def get_ollama_model_options(self):
         return self.config["DEFAULT"].get("OLLAMA_MODEL_OPTIONS").split(", ")
+
+    def get_ollama_available_models(self):
+        return self.config["DEFAULT"].get("OLLAMA_AVAILABLE_MODELS").split(", ")
 
     def get_model_options_for_provider(self, provider: str):
         if provider == "OpenAI":
